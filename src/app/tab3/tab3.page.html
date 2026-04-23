@@ -1,17 +1,68 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Update / Delete Item</ion-title>
+    <ion-button slot="end" fill="clear">Help</ion-button>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <!-- Search Form -->
+  <form [formGroup]="searchForm">
+    <ion-list>
+      <ion-item>
+        <ion-label>Search Item Name</ion-label>
+        <ion-input formControlName="name"></ion-input>
+      </ion-item>
+    </ion-list>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+    <ion-button color="primary" expand="block" (click)="searchItem()">
+      Search Item
+    </ion-button>
+  </form>
+
+  <!-- Item Edit Form -->
+  <div *ngIf="itemFound" class="ion-margin-top">
+    <form [formGroup]="itemForm">
+      <ion-list>
+        <ion-item>
+          <ion-label>Item Name</ion-label>
+          <ion-input formControlName="name" [disabled]="true"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Category</ion-label>
+          <ion-select formControlName="category">
+            <ion-select-option value="Electronics">Electronics</ion-select-option>
+            <ion-select-option value="Furniture">Furniture</ion-select-option>
+            <ion-select-option value="Clothing">Clothing</ion-select-option>
+            <ion-select-option value="Tools">Tools</ion-select-option>
+            <ion-select-option value="Miscellaneous">Miscellaneous</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Quantity</ion-label>
+          <ion-input type="number" formControlName="quantity"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Price</ion-label>
+          <ion-input type="number" formControlName="price"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Supplier</ion-label>
+          <ion-input formControlName="supplier"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-button color="primary" expand="block" (click)="updateItem()" class="ion-margin-top">
+        Update Item
+      </ion-button>
+
+      <ion-button color="danger" expand="block" (click)="deleteItem()">
+        Delete Item
+      </ion-button>
+    </form>
+  </div>
 </ion-content>

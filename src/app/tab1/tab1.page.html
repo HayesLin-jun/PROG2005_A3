@@ -1,17 +1,28 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Inventory Item List</ion-title>
+    <ion-button slot="end" fill="clear">Help</ion-button>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <!-- Item Search Bar -->
+  <ion-item>
+    <ion-label position="floating">Search Item Name</ion-label>
+    <ion-input [(ngModel)]="searchKeyword" (input)="searchItemsByName()"></ion-input>
+  </ion-item>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <!-- Inventory Item Cards -->
+  <ion-card *ngFor="let item of filteredItemList">
+    <ion-card-header>
+      <ion-card-title>{{item.name}}</ion-card-title>
+      <ion-card-subtitle>Category: {{item.category}}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Quantity: {{item.quantity}}</p>
+      <p>Price: ${{item.price}}</p>
+      <p>Stock Status: {{item.status}}</p>
+      <p>Supplier: {{item.supplier}}</p>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

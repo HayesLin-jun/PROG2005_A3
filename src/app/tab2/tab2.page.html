@@ -1,17 +1,56 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Add New Item</ion-title>
+    <ion-button slot="end" fill="clear">Help</ion-button>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <form [formGroup]="itemForm">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Item Name</ion-label>
+        <ion-input formControlName="name"></ion-input>
+      </ion-item>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+      <ion-item>
+        <ion-label position="stacked">Category</ion-label>
+        <ion-select formControlName="category">
+          <ion-select-option value="Electronics">Electronics</ion-select-option>
+          <ion-select-option value="Furniture">Furniture</ion-select-option>
+          <ion-select-option value="Clothing">Clothing</ion-select-option>
+          <ion-select-option value="Tools">Tools</ion-select-option>
+          <ion-select-option value="Miscellaneous">Miscellaneous</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Quantity</ion-label>
+        <ion-input type="number" formControlName="quantity"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Price</ion-label>
+        <ion-input type="number" formControlName="price"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Supplier</ion-label>
+        <ion-input formControlName="supplier"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Status</ion-label>
+        <ion-select formControlName="status">
+          <ion-select-option value="In Stock">In Stock</ion-select-option>
+          <ion-select-option value="Low Stock">Low Stock</ion-select-option>
+          <ion-select-option value="Out of Stock">Out of Stock</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" color="success" (click)="addItem()" class="ion-margin-top">
+      Save New Item
+    </ion-button>
+  </form>
 </ion-content>
