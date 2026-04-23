@@ -9,13 +9,13 @@
   <!-- Search Form -->
   <form [formGroup]="searchForm">
     <ion-list>
-      <ion-item>
-        <ion-label>Search Item Name</ion-label>
-        <ion-input formControlName="name"></ion-input>
+      <ion-item class="ion-margin-bottom">
+        <ion-label position="stacked">Search Item Name</ion-label>
+        <ion-input formControlName="name" placeholder="Enter exact item name"></ion-input>
       </ion-item>
     </ion-list>
 
-    <ion-button color="primary" expand="block" (click)="searchItem()">
+    <ion-button color="primary" expand="block" (click)="searchItem()" class="ion-margin-bottom">
       Search Item
     </ion-button>
   </form>
@@ -24,13 +24,13 @@
   <div *ngIf="itemFound" class="ion-margin-top">
     <form [formGroup]="itemForm">
       <ion-list>
-        <ion-item>
-          <ion-label>Item Name</ion-label>
+        <ion-item class="ion-margin-bottom">
+          <ion-label position="stacked">Item Name</ion-label>
           <ion-input formControlName="name" [disabled]="true"></ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label>Category</ion-label>
+        <ion-item class="ion-margin-bottom">
+          <ion-label position="stacked">Category</ion-label>
           <ion-select formControlName="category">
             <ion-select-option value="Electronics">Electronics</ion-select-option>
             <ion-select-option value="Furniture">Furniture</ion-select-option>
@@ -40,19 +40,19 @@
           </ion-select>
         </ion-item>
 
-        <ion-item>
-          <ion-label>Quantity</ion-label>
+        <ion-item class="ion-margin-bottom">
+          <ion-label position="stacked">Quantity</ion-label>
           <ion-input type="number" formControlName="quantity"></ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label>Price</ion-label>
+        <ion-item class="ion-margin-bottom">
+          <ion-label position="stacked">Price</ion-label>
           <ion-input type="number" formControlName="price"></ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label>Supplier</ion-label>
-          <ion-input formControlName="supplier"></ion-input>
+        <ion-item class="ion-margin-bottom">
+          <ion-label position="stacked">Supplier</ion-label>
+          <ion-input formControlName="supplier" placeholder="Supplier name"></ion-input>
         </ion-item>
       </ion-list>
 
@@ -60,7 +60,7 @@
         Update Item
       </ion-button>
 
-      <ion-button color="danger" expand="block" (click)="deleteItem()">
+      <ion-button color="danger" expand="block" (click)="deleteItem()" class="ion-margin-top">
         Delete Item
       </ion-button>
     </form>

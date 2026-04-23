@@ -5,15 +5,16 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
+
   <!-- Item Search Bar -->
-  <ion-item>
+  <ion-item class="ion-margin-bottom">
     <ion-label position="floating">Search Item Name</ion-label>
     <ion-input [(ngModel)]="searchKeyword" (input)="searchItemsByName()"></ion-input>
   </ion-item>
 
   <!-- Inventory Item Cards -->
-  <ion-card *ngFor="let item of filteredItemList">
+  <ion-card *ngFor="let item of filteredItemList" class="ion-margin-bottom">
     <ion-card-header>
       <ion-card-title>{{item.name}}</ion-card-title>
       <ion-card-subtitle>Category: {{item.category}}</ion-card-subtitle>
@@ -25,4 +26,5 @@
       <p>Supplier: {{item.supplier}}</p>
     </ion-card-content>
   </ion-card>
+
 </ion-content>
