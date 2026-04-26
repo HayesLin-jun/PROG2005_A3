@@ -1,5 +1,5 @@
 {
-  "name": "inventoryApp",
+  "name": "inventory-app",
   "integrations": {
     "capacitor": {}
   },

@@ -1,117 +1,107 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { InventoryService } from '../services/inventory';
-import { ToastController } from '@ionic/angular';
+import { DataService } from '../services/data.service';
+import { InventoryItem } from '../models/inventory.model';
+import { AlertController, ToastController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab3',
-  templateUrl: './tab3.page.html',
-  styleUrls: ['./tab3.page.scss'],
+  templateUrl: 'tab3.page.html',
+  styleUrls: ['tab3.page.scss'],
   standalone: false
 })
 export class Tab3Page {
-  searchForm: FormGroup;
-  itemForm: FormGroup;
-  itemFound = false;
+  searchName: string = '';
+  item: InventoryItem | null = null;
+  isSearching: boolean = false;
 
   constructor(
-    private fb: FormBuilder,
-    private inventoryService: InventoryService,
-    private toastController: ToastController
-  ) {
-    this.searchForm = this.fb.group({ name: [''] });
-    this.itemForm = this.fb.group({
-      name: [{ value: '', disabled: true }],
-      category: [''],
-      quantity: [1],
-      price: [1],
-      supplier: [''],
-      status: ['In Stock']
-    });
-  }
+    private dataService: DataService,
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController
+  ) {}
 
-  searchItem() {
-    const name = this.searchForm.value.name;
-    this.inventoryService.getItemByItemName(name).subscribe({
-      next: (item) => {
-        this.itemForm.patchValue(item);
-        this.itemFound = true;
+  // Advanced search with loading indicator
+  async fetchItem() {
+    const query = this.searchName.trim();
+    if (!query) {
+      this.item = null;
+      return;
+    }
+
+    this.isSearching = true;
+    this.dataService.getItemByName(query).subscribe({
+      next: (res) => {
+        this.item = res;
+        this.isSearching = false;
       },
-      error: async () => {
-        const t = await this.toastController.create({
-          message: 'Item not found',
-          duration: 2000,
-          color: 'danger'
-        });
-        t.present();
+      error: () => {
+        this.item = null;
+        this.isSearching = false;
       }
     });
   }
 
   async updateItem() {
-    const name = this.searchForm.value.name;
-    if (name.toLowerCase() === 'laptop') {
-      const t = await this.toastController.create({
-        message: 'Laptop cannot be updated',
-        duration: 2000,
-        color: 'warning'
-      });
-      t.present();
-      return;
-    }
+    if (!this.item) return;
+    
+    const loading = await this.loadingCtrl.create({ message: 'Updating...' });
+    await loading.present();
 
-    this.inventoryService.updateInventoryItem(name, this.itemForm.value).subscribe({
-      next: async () => {
-        const t = await this.toastController.create({
-          message: 'Item updated',
-          duration: 2000,
-          color: 'success'
-        });
-        t.present();
+    this.dataService.updateItem(this.item.item_name, this.item).subscribe({
+      next: () => {
+        loading.dismiss();
+        this.presentToast('Inventory record synchronized!', 'success');
       },
-      error: async () => {
-        const t = await this.toastController.create({
-          message: 'Update failed',
-          duration: 2000,
-          color: 'danger'
-        });
-        t.present();
+      error: () => {
+        loading.dismiss();
+        this.presentToast('Update failed. Try again.', 'danger');
       }
     });
   }
 
-  async deleteItem() {
-    const name = this.searchForm.value.name;
-    if (name.toLowerCase() === 'laptop') {
-      const t = await this.toastController.create({
-        message: 'Laptop cannot be deleted',
-        duration: 2000,
-        color: 'warning'
+  // Double confirmation for deletion
+  async confirmDelete() {
+    if (!this.item) return;
+
+    // SCU Security Rule: Protect Laptop
+    if (this.item.item_name.toLowerCase() === 'laptop') {
+      const alert = await this.alertCtrl.create({
+        header: 'System Protected',
+        subHeader: 'Action Denied',
+        message: 'The "Laptop" record is a critical asset and cannot be removed from the system.',
+        buttons: ['OK']
       });
-      t.present();
+      await alert.present();
       return;
     }
 
-    this.inventoryService.deleteInventoryItem(name).subscribe({
-      next: async () => {
-        const t = await this.toastController.create({
-          message: 'Item deleted',
-          duration: 2000,
-          color: 'success'
-        });
-        t.present();
-        this.itemFound = false;
-        this.searchForm.reset();
-        this.itemForm.reset();
-      },
-      error: async () => {
-        const t = await this.toastController.create({
-          message: 'Delete failed',
-          duration: 2000,
-          color: 'danger'
-        });
-        t.present();
-      }
+    const alert = await this.alertCtrl.create({
+      header: 'Confirm Deletion',
+      message: `Are you sure you want to permanently delete <strong>${this.item.item_name}</strong>?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () => { this.executeDelete(); }
+        }
+      ]
     });
+    await alert.present();
+  }
+
+  private executeDelete() {
+    if (!this.item) return;
+    this.dataService.deleteItem(this.item.item_name).subscribe(() => {
+      this.presentToast('Item removed from database.', 'medium');
+      this.item = null;
+      this.searchName = '';
+    });
+  }
+
+  async presentToast(msg: string, color: string) {
+    const toast = await this.toastCtrl.create({ message: msg, duration: 2000, color: color, position: 'top' });
+    toast.present();
   }
 }

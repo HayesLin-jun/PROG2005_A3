@@ -1,63 +1,38 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { InventoryService } from '../services/inventory';
+import { Component, OnInit } from '@angular/core';
+import { DataService } from '../services/data.service';
+import { InventoryItem } from '../models/inventory.model';
 import { ToastController } from '@ionic/angular';
 
-@Component({
-  selector: 'app-tab2',
-  templateUrl: './tab2.page.html',
-  styleUrls: ['./tab2.page.scss'],
-  standalone: false
-})
-export class Tab2Page {
-  itemForm: FormGroup;
+@Component({ selector: 'app-tab2', templateUrl: 'tab2.page.html',standalone: false })
+export class Tab2Page implements OnInit {
+  viewMode: string = 'add'; // Controls the segment toggle
+  featuredItems: InventoryItem[] = [];
+  
+  newItem: InventoryItem = {
+    item_name: '',
+    category: 'Electronics',
+    quantity: 0,
+    price: 0,
+    supplier_name: '',
+    stock_status: 'In Stock',
+    featured_item: 0
+  };
 
-  constructor(
-    private fb: FormBuilder,
-    private inventoryService: InventoryService,
-    private toastController: ToastController
-  ) {
-    this.itemForm = this.fb.group({
-      name: ['', Validators.required],
-      category: ['Electronics', Validators.required],
-      quantity: [1, Validators.required],
-      price: [1, Validators.required],
-      supplier: ['', Validators.required],
-      status: ['In Stock', Validators.required],
-      featured: [0],
-      notes: ['']
+  constructor(private dataService: DataService, private toast: ToastController) {}
+
+  ngOnInit() { this.loadFeatured(); }
+
+  loadFeatured() {
+    this.dataService.getAllItems().subscribe(data => {
+      this.featuredItems = data.filter(i => i.featured_item > 0);
     });
   }
 
-  async addItem() {
-    if (this.itemForm.invalid) {
-      const toast = await this.toastController.create({
-        message: 'Please fill all required fields',
-        duration: 2000,
-        color: 'warning'
-      });
-      toast.present();
-      return;
-    }
-
-    this.inventoryService.addNewInventoryItem(this.itemForm.value).subscribe({
-      next: async () => {
-        const toast = await this.toastController.create({
-          message: 'Item added successfully',
-          duration: 2000,
-          color: 'success'
-        });
-        toast.present();
-        this.itemForm.reset();
-      },
-      error: async () => {
-        const toast = await this.toastController.create({
-          message: 'Failed to add item',
-          duration: 2000,
-          color: 'danger'
-        });
-        toast.present();
-      }
+  async onAdd() {
+    this.dataService.addItem(this.newItem).subscribe(async () => {
+      const t = await this.toast.create({ message: 'Item Added!', duration: 2000, color: 'success' });
+      t.present();
+      this.loadFeatured(); // Refresh featured list
     });
   }
 }

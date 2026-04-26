@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   {
     path: 'privacy',
-    loadChildren: () => import('./privacy/privacy.module').then( m => m.PrivacyPageModule)
+    loadChildren: () => import('./pages/privacy/privacy.module').then( m => m.PrivacyPageModule)
   }
 ];
 @NgModule({

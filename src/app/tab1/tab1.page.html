@@ -1,30 +1,54 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>Inventory Item List</ion-title>
-    <ion-button slot="end" fill="clear">Help</ion-button>
+    <ion-title>Inventory Monitor</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showHelp()">
+        <ion-icon name="help-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="true">
+  <ion-searchbar 
+    [(ngModel)]="searchQuery" 
+    (ionInput)="handleSearch()" 
+    placeholder="Search items...">
+  </ion-searchbar>
 
-  <!-- Item Search Bar -->
-  <ion-item class="ion-margin-bottom">
-    <ion-label position="floating">Search Item Name</ion-label>
-    <ion-input [(ngModel)]="searchKeyword" (input)="searchItemsByName()"></ion-input>
-  </ion-item>
+  <div class="ion-padding-horizontal">
+    <ion-note>Total Results: {{ itemCount }}</ion-note>
+  </div>
 
-  <!-- Inventory Item Cards -->
-  <ion-card *ngFor="let item of filteredItemList" class="ion-margin-bottom">
-    <ion-card-header>
-      <ion-card-title>{{item.name}}</ion-card-title>
-      <ion-card-subtitle>Category: {{item.category}}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Quantity: {{item.quantity}}</p>
-      <p>Price: ${{item.price}}</p>
-      <p>Stock Status: {{item.status}}</p>
-      <p>Supplier: {{item.supplier}}</p>
-    </ion-card-content>
-  </ion-card>
+  <ion-list lines="none">
+    <ion-card *ngFor="let item of filteredItems" 
+              [class]="'status-card ' + getStatusColor(item.stock_status)">
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="8">
+              <ion-text color="dark">
+                <h2 style="font-weight: bold; margin: 0;">{{ item.item_name }}</h2>
+              </ion-text>
+              <p style="font-size: 0.8rem; color: #666;">ID: {{ item.item_id }} | {{ item.category }}</p>
+            </ion-col>
+            <ion-col size="4" class="ion-text-right">
+              <ion-badge [color]="getStatusColor(item.stock_status)" mode="ios">
+                {{ item.stock_status }}
+              </ion-badge>
+            </ion-col>
+          </ion-row>
 
+          <ion-row class="ion-margin-top">
+            <ion-col size="6">
+              <p>Price: <strong>${{ item.price }}</strong></p>
+            </ion-col>
+            <ion-col size="6">
+              <p>Qty: <strong>{{ item.quantity }}</strong></p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
 </ion-content>

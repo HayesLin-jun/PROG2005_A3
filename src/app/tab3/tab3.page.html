@@ -1,68 +1,93 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>Update / Delete Item</ion-title>
-    <ion-button slot="end" fill="clear">Help</ion-button>
+    <ion-title>Database Console</ion-title>
+    <ion-buttons slot="end">
+      <ion-button><ion-icon name="options-outline"></ion-icon></ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <!-- Search Form -->
-  <form [formGroup]="searchForm">
-    <ion-list>
-      <ion-item class="ion-margin-bottom">
-        <ion-label position="stacked">Search Item Name</ion-label>
-        <ion-input formControlName="name" placeholder="Enter exact item name"></ion-input>
-      </ion-item>
-    </ion-list>
-
-    <ion-button color="primary" expand="block" (click)="searchItem()" class="ion-margin-bottom">
-      Search Item
-    </ion-button>
-  </form>
-
-  <!-- Item Edit Form -->
-  <div *ngIf="itemFound" class="ion-margin-top">
-    <form [formGroup]="itemForm">
-      <ion-list>
-        <ion-item class="ion-margin-bottom">
-          <ion-label position="stacked">Item Name</ion-label>
-          <ion-input formControlName="name" [disabled]="true"></ion-input>
-        </ion-item>
-
-        <ion-item class="ion-margin-bottom">
-          <ion-label position="stacked">Category</ion-label>
-          <ion-select formControlName="category">
-            <ion-select-option value="Electronics">Electronics</ion-select-option>
-            <ion-select-option value="Furniture">Furniture</ion-select-option>
-            <ion-select-option value="Clothing">Clothing</ion-select-option>
-            <ion-select-option value="Tools">Tools</ion-select-option>
-            <ion-select-option value="Miscellaneous">Miscellaneous</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item class="ion-margin-bottom">
-          <ion-label position="stacked">Quantity</ion-label>
-          <ion-input type="number" formControlName="quantity"></ion-input>
-        </ion-item>
-
-        <ion-item class="ion-margin-bottom">
-          <ion-label position="stacked">Price</ion-label>
-          <ion-input type="number" formControlName="price"></ion-input>
-        </ion-item>
-
-        <ion-item class="ion-margin-bottom">
-          <ion-label position="stacked">Supplier</ion-label>
-          <ion-input formControlName="supplier" placeholder="Supplier name"></ion-input>
-        </ion-item>
-      </ion-list>
-
-      <ion-button color="primary" expand="block" (click)="updateItem()" class="ion-margin-top">
-        Update Item
-      </ion-button>
-
-      <ion-button color="danger" expand="block" (click)="deleteItem()" class="ion-margin-top">
-        Delete Item
-      </ion-button>
-    </form>
+<ion-content [fullscreen]="true" style="--background: #f8f9fa;">
+  
+  <div class="search-container ion-padding">
+    <ion-searchbar 
+      [(ngModel)]="searchName" 
+      (ionInput)="fetchItem()" 
+      placeholder="Enter exact item name..." 
+      animated="true"
+      class="custom-search">
+    </ion-searchbar>
+    <ion-progress-bar *ngIf="isSearching" type="indeterminate"></ion-progress-bar>
   </div>
+
+  <div *ngIf="item" class="ion-animate">
+    <ion-card mode="ios" class="manage-card">
+      <ion-card-header>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <ion-badge color="primary" mode="ios">ITEM ID: {{ item.item_id }}</ion-badge>
+          <ion-icon name="cloud-upload-outline" color="primary" style="font-size: 24px;"></ion-icon>
+        </div>
+        <ion-card-title class="ion-margin-top">{{ item.item_name }}</ion-card-title>
+        <ion-card-subtitle>Category: {{ item.category }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item-divider color="light">
+            <ion-label>CORE ATTRIBUTES</ion-label>
+          </ion-item-divider>
+
+          <ion-item class="input-item">
+            <ion-icon name="archive-outline" slot="start"></ion-icon>
+            <ion-label position="stacked">Stock Quantity</ion-label>
+            <ion-input type="number" [(ngModel)]="item.quantity" placeholder="0"></ion-input>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-icon name="cash-outline" slot="start"></ion-icon>
+            <ion-label position="stacked">Unit Price ($)</ion-label>
+            <ion-input type="number" [(ngModel)]="item.price" placeholder="0.00"></ion-input>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+            <ion-label position="stacked">Inventory Status</ion-label>
+            <ion-select [(ngModel)]="item.stock_status">
+              <ion-select-option value="In Stock">In Stock</ion-select-option>
+              <ion-select-option value="Low Stock">Low Stock</ion-select-option>
+              <ion-select-option value="Out of Stock">Out of Stock</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item-divider color="light" class="ion-margin-top">
+            <ion-label>LOGISTICS</ion-label>
+          </ion-item-divider>
+
+          <ion-item class="input-item">
+            <ion-icon name="business-outline" slot="start"></ion-icon>
+            <ion-label position="stacked">Supplier Name</ion-label>
+            <ion-input [(ngModel)]="item.supplier_name"></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <div class="action-grid ion-padding-top">
+          <ion-button expand="block" (click)="updateItem()" class="save-btn">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            SYNC CHANGES
+          </ion-button>
+          
+          <ion-button expand="block" fill="clear" color="danger" (click)="confirmDelete()" class="delete-btn">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            REMOVE FROM DATABASE
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div *ngIf="!item && !isSearching" class="empty-state ion-text-center ion-padding">
+    <ion-icon name="search-outline" style="font-size: 80px; color: #ccc;"></ion-icon>
+    <p style="color: #999;">Search for a record to begin management.</p>
+  </div>
+
 </ion-content>

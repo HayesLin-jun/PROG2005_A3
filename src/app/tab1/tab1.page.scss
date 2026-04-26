@@ -1,0 +1,22 @@
+.status-card {
+  margin: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// 动态边框颜色
+.success { border-left: 6px solid var(--ion-color-success); }
+.warning { border-left: 6px solid var(--ion-color-warning); }
+.danger  { border-left: 6px solid var(--ion-color-danger); }
+.medium  { border-left: 6px solid var(--ion-color-medium); }
+
+ion-badge {
+  padding: 5px 10px;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+}
